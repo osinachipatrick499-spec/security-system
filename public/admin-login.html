@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Admin Login</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+}
+
+.card{
+background:rgb(207, 143, 143);
+padding:40px;
+border-radius:12px;
+width:350px;
+text-align:center;
+box-shadow:0 10px 30px rgba(0,0,0,0.3);
+}
+
+.title{
+font-size:24px;
+font-weight:bold;
+margin-bottom:20px;
+}
+
+input{
+width:100%;
+padding:14px;
+margin-bottom:15px;
+border-radius:8px;
+border:1px solid #ccc;
+font-size:14px;
+}
+
+button{
+width:100%;
+padding:14px;
+border:none;
+border-radius:8px;
+background:#1877f2;
+color:rgb(187, 175, 175);
+font-size:16px;
+font-weight:bold;
+cursor:pointer;
+}
+
+button:hover{
+opacity:0.9;
+}
+
+.message{
+margin-top:10px;
+font-size:14px;
+color:rgb(255, 72, 0);
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+<div class="title">Admin Access</div>
+
+<input id="passcode" type="password" placeholder="Enter Admin Passcode">
+
+<button onclick="login()">Access Dashboard</button>
+
+<div class="message" id="message"></div>
+
+</div>
+
+<script>
+
+async function login(){
+
+const passcode=document.getElementById("passcode").value
+const message=document.getElementById("message")
+
+message.innerText="Checking..."
+
+try{
+
+const response = await fetch("/api/auth/admin-login",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+passcode:passcode
+})
+
+})
+
+const data = await response.json()
+
+if(data.success){
+
+window.location.href="/admin-dashboard.html"
+
+}else{
+
+message.innerText="Invalid admin passcode"
+
+}
+
+}catch(error){
+
+console.error(error)
+message.innerText="Server connection failed"
+
+}
+
+}
+
+</script>
+
+</body>
+</html>

