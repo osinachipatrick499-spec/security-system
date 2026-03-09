@@ -10,7 +10,10 @@ const emailRoutes = require("./routes/emailRoutes")
 
 const app = express()
 
-app.use(cors())
+app.use(cors({
+origin: "https://security-system-production.up.railway.app",
+credentials: true
+}))
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 app.use(cookieParser())

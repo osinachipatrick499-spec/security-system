@@ -38,7 +38,8 @@ margin-bottom:30px;
 /* LOGIN CARD */
 
 .card{
-width:380px;
+width:90%;
+max-width:380px;
 background:white;
 padding:30px;
 border-radius:10px;
@@ -222,6 +223,7 @@ try{
 const response=await fetch("/api/auth/login",{
 
 method:"POST",
+credentials:"include",
 
 headers:{
 "Content-Type":"application/json"
