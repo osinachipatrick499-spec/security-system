@@ -145,7 +145,7 @@ message:"Email failed to send"
 
 codeService.addActivity(email,"Security email sent")
 
-res.json({
+return res.status(200).json({
 success:true,
 message:"Email sent successfully"
 })
