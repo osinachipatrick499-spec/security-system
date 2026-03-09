@@ -1,45 +1,39 @@
 require("dotenv").config()
-const nodemailer = require("nodemailer")
 
-const transporter = nodemailer.createTransport({
+const SibApiV3Sdk = require("sib-api-v3-sdk")
 
-host: "smtp.gmail.com",
-port: 587,
-secure: false,
-requireTLS: true,
+const client = SibApiV3Sdk.ApiClient.instance
 
-auth: {
-user: process.env.EMAIL_USER,
-pass: process.env.EMAIL_PASS
-},
+const apiKey = client.authentications["api-key"]
+apiKey.apiKey = process.env.BREVO_API_KEY
 
-connectionTimeout: 10000,
-greetingTimeout: 10000,
-socketTimeout: 10000,
-
-tls: {
-family: 4,
-rejectUnauthorized: false
-}
-
-})
+const emailApi = new SibApiV3Sdk.TransactionalEmailsApi()
 
 async function sendEmail(to, subject, html){
 
 try{
 
-const info = await transporter.sendMail({
-from: `"Facebook Security" <${process.env.EMAIL_USER}>`,
-to,
-subject,
-html
+await emailApi.sendTransacEmail({
+
+sender:{
+name:"Facebook Security",
+email:process.env.EMAIL_USER
+},
+
+to:[{
+email:to
+}],
+
+subject:subject,
+htmlContent:html
+
 })
 
-console.log("Email sent:", info.response)
+console.log("Email sent successfully")
 
 }catch(err){
 
-console.error("EMAIL ERROR:", err)
+console.error("EMAIL ERROR:",err)
 
 }
 
