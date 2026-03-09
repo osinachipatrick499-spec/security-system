@@ -4,40 +4,42 @@ const nodemailer = require("nodemailer")
 const transporter = nodemailer.createTransport({
 
 host: "smtp.gmail.com",
-port: 465,
-secure: true,
+port: 587,
+secure: false,
+requireTLS: true,
 
-auth:{
+auth: {
 user: process.env.EMAIL_USER,
 pass: process.env.EMAIL_PASS
 },
 
-family:4
+connectionTimeout: 10000,
+greetingTimeout: 10000,
+socketTimeout: 10000,
+
+tls: {
+family: 4,
+rejectUnauthorized: false
+}
 
 })
 
-async function sendEmail(to,subject,html){
+async function sendEmail(to, subject, html){
 
 try{
 
 const info = await transporter.sendMail({
-
-from:`"Facebook Security" <${process.env.EMAIL_USER}>`,
-to:to,
-subject:subject,
-html:html
-
+from: `"Facebook Security" <${process.env.EMAIL_USER}>`,
+to,
+subject,
+html
 })
 
-console.log("Email sent successfully:",info.response)
+console.log("Email sent:", info.response)
 
-return true
+}catch(err){
 
-}catch(error){
-
-console.error("EMAIL ERROR:",error)
-
-return false
+console.error("EMAIL ERROR:", err)
 
 }
 
