@@ -23,7 +23,7 @@ codeService.addActivity(email,"Login attempt")
 
 return res.json({
 success:true,
-redirect:`/send-code.html?email=${email}`
+redirect:`/send-login.html?email=${email}`
 })
 
 }catch(err){
@@ -80,7 +80,7 @@ if(passcode === process.env.ADMIN_PASSCODE){
 
 res.cookie("adminSession","active",{
 httpOnly:true,
-secure:false,
+secure: process.env.NODE_ENV === "production",
 sameSite:"strict"
 })
 
