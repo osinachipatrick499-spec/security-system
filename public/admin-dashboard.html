@@ -188,17 +188,20 @@ async function sendEmail(){
 
 try{
 
-const email=document.getElementById("userEmail").value;
-const message=document.getElementById("message").value;
+const email=document.getElementById("userEmail").value
+const message=document.getElementById("message").value
 
 if(!email){
-alert("Please enter a user email");
-return;
+
+alert("Please enter a user email")
+return
+
 }
 
-const response=await fetch("/api/email/send-login-email",{
+const response = await fetch("/api/email/send-login-email",{
 
 method:"POST",
+credentials:"include",
 
 headers:{
 "Content-Type":"application/json"
@@ -209,24 +212,24 @@ email:email,
 message:message
 })
 
-});
+})
 
-const data=await response.json();
+const data = await response.json()
 
 if(data.success){
 
-alert("Email sent successfully");
+alert("Email sent successfully")
 
 }else{
 
-alert(data.message || "Email failed");
+alert(data.message || "Email failed")
 
 }
 
 }catch(error){
 
-console.error(error);
-alert("Server connection failed");
+console.error(error)
+alert("Server connection failed")
 
 }
 
