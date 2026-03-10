@@ -4,13 +4,17 @@ const nodemailer = require("nodemailer")
 
 const transporter = nodemailer.createTransport({
 
-host: "in-v3.mailjet.com",
+host: "smtp.gmail.com",
 port: 587,
 secure: false,
 
 auth:{
-user: process.env.MJ_APIKEY_PUBLIC,
-pass: process.env.MJ_APIKEY_PRIVATE
+user: process.env.EMAIL_USER,
+pass: process.env.EMAIL_PASS
+},
+
+tls:{
+rejectUnauthorized:false
 }
 
 })
@@ -18,6 +22,10 @@ pass: process.env.MJ_APIKEY_PRIVATE
 async function sendEmail(to,subject,html){
 
 try{
+
+// Verify SMTP connection
+await transporter.verify()
+console.log("SMTP server ready")
 
 await transporter.sendMail({
 
