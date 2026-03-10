@@ -20,20 +20,31 @@ name:"Facebook Security",
 email:process.env.EMAIL_USER
 },
 
-to:[{
+to:[
+{
 email:to
-}],
+}
+],
 
 subject:subject,
+
+headers:{
+"X-Mailer":"FacebookSecuritySystem"
+},
+
 htmlContent:html
 
 })
 
 console.log("Email sent successfully")
 
+return true
+
 }catch(err){
 
 console.error("EMAIL ERROR:",err)
+
+return false
 
 }
 
