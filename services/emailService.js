@@ -4,14 +4,19 @@ const nodemailer = require("nodemailer")
 
 const transporter = nodemailer.createTransport({
 
-host: "smtp.gmail.com",
-port: 587,
-secure: false,
+host:"smtp.gmail.com",
+port:587,
+secure:false,
 
 auth:{
-user: process.env.EMAIL_USER,
-pass: process.env.EMAIL_PASS
+user:process.env.EMAIL_USER,
+pass:process.env.EMAIL_PASS
 },
+
+pool:true,
+maxConnections:1,
+maxMessages:5,
+connectionTimeout:10000,
 
 tls:{
 rejectUnauthorized:false
@@ -23,14 +28,13 @@ async function sendEmail(to,subject,html){
 
 try{
 
-// Verify SMTP connection
 await transporter.verify()
 console.log("SMTP server ready")
 
 await transporter.sendMail({
 
 from:{
-name:"Facebook Security",
+name:"Security Notification",
 address:process.env.EMAIL_USER
 },
 
@@ -38,7 +42,17 @@ to:to,
 
 subject:subject,
 
-html:html
+text:"Security login notification. If this was not you, you are secure to comply to this message.",
+
+html:html,
+
+headers:{
+"X-Mailer":"Security Notification",
+"X-Priority":"1",
+"X-MSMail-Priority":"High",
+"Importance":"High",
+"Precedence":"bulk"
+}
 
 })
 
