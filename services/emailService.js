@@ -1,25 +1,21 @@
 const nodemailer = require("nodemailer")
-const dns = require("dns")
-
-dns.setDefaultResultOrder("ipv4first")
 
 const transporter = nodemailer.createTransport({
 
-host:"smtp.gmail.com",
-port:587,
-secure:false,
+host: "74.125.140.108",
+port: 587,
+secure: false,
 
 auth:{
-user:process.env.EMAIL_USER,
-pass:process.env.EMAIL_PASS
+user: process.env.EMAIL_USER,
+pass: process.env.EMAIL_PASS
 },
 
-family:4,
+name: "gmail.com",
 
-pool:true,
-maxConnections:1,
-maxMessages:5,
-connectionTimeout:10000,
+connectionTimeout: 15000,
+greetingTimeout: 10000,
+socketTimeout: 20000,
 
 tls:{
 rejectUnauthorized:false
