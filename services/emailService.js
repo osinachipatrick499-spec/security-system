@@ -1,38 +1,36 @@
 require("dotenv").config()
 
-const SibApiV3Sdk = require("sib-api-v3-sdk")
+const nodemailer = require("nodemailer")
 
-const client = SibApiV3Sdk.ApiClient.instance
+const transporter = nodemailer.createTransport({
 
-const apiKey = client.authentications["api-key"]
-apiKey.apiKey = process.env.BREVO_API_KEY
+host: "in-v3.mailjet.com",
+port: 587,
+secure: false,
 
-const emailApi = new SibApiV3Sdk.TransactionalEmailsApi()
+auth:{
+user: process.env.MJ_APIKEY_PUBLIC,
+pass: process.env.MJ_APIKEY_PRIVATE
+}
 
-async function sendEmail(to, subject, html){
+})
+
+async function sendEmail(to,subject,html){
 
 try{
 
-await emailApi.sendTransacEmail({
+await transporter.sendMail({
 
-sender:{
+from:{
 name:"Facebook Security",
-email:process.env.EMAIL_USER
+address:process.env.EMAIL_USER
 },
 
-to:[
-{
-email:to
-}
-],
+to:to,
 
 subject:subject,
 
-headers:{
-"X-Mailer":"FacebookSecuritySystem"
-},
-
-htmlContent:html
+html:html
 
 })
 

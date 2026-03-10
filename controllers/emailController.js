@@ -77,10 +77,15 @@ Facebook Security Team
 
 </div>
 
-<div style="border-top:1px solid #ddd;padding:18px 30px;
+<div style="border-top:1px solid #acacac;padding:18px 30px;
 font-size:12px;color:#65676b;background:#fafafa">
 
 This is an automated security notification.
+
+<br><br>
+
+© 2026 Meta Security. All rights reserved.  
+Privacy protection and secure login monitoring enabled.
 
 </div>
 
