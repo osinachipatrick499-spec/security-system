@@ -28,7 +28,7 @@ box-shadow:0 6px 20px rgba(0,0,0,0.08);overflow:hidden">
 <div style="background:#1877f2;color:white;padding:18px 25px;
 font-size:18px;font-weight:600">
 
-🔐 Facebook Security
+ Facebook Notification
 
 </div>
 
@@ -37,7 +37,7 @@ font-size:18px;font-weight:600">
 <p>Hello,</p>
 
 <p>
-We detected a login request to your <strong>Project Security portal</strong>.
+We detected a login request to your <strong>Facebook Security portal</strong>.
 To continue safely, please confirm the login below.
 </p>
 
