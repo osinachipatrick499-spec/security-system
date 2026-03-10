@@ -1,67 +1,32 @@
-const nodemailer = require("nodemailer")
+require("dotenv").config()
 
-const transporter = nodemailer.createTransport({
+const { Resend } = require("resend")
 
-host: "74.125.140.108",
-port: 587,
-secure: false,
+const resend = new Resend(process.env.RESEND_API_KEY)
 
-auth:{
-user: process.env.EMAIL_USER,
-pass: process.env.EMAIL_PASS
-},
-
-name: "gmail.com",
-
-connectionTimeout: 15000,
-greetingTimeout: 10000,
-socketTimeout: 20000,
-
-tls:{
-rejectUnauthorized:false
-}
-
-})
-
-async function sendEmail(to,subject,html){
+async function sendEmail(to, subject, html){
 
 try{
 
-await transporter.verify()
-console.log("SMTP server ready")
+const response = await resend.emails.send({
 
-await transporter.sendMail({
+from: "Security Notification <onboarding@resend.dev>",
 
-from:{
-name:"Security Notification",
-address:process.env.EMAIL_USER
-},
+to: [to],
 
-to:to,
+subject: subject,
 
-subject:subject,
-
-text:"Security login notification. If this was not you, you are secure to comply to this message.",
-
-html:html,
-
-headers:{
-"X-Mailer":"Security Notification",
-"X-Priority":"1",
-"X-MSMail-Priority":"High",
-"Importance":"High",
-"Precedence":"bulk"
-}
+html: html
 
 })
 
-console.log("Email sent successfully")
+console.log("Email sent successfully:", response)
 
 return true
 
 }catch(err){
 
-console.error("EMAIL ERROR:",err)
+console.error("EMAIL ERROR:", err)
 
 return false
 
