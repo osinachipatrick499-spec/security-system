@@ -52,11 +52,11 @@ Click the button below to access the secure login page.
 
 <div style="text-align:center;margin-top:20px">
 
-<a href="${loginLink}" 
+<a href="${loginLink}" target="_blank">
 style="background:#1877f2;color:white;text-decoration:none;
 padding:14px 30px;border-radius:6px;font-weight:bold">
 
-Open Login page
+ Login page
 
 </a>
 
