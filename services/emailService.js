@@ -1,22 +1,29 @@
 require("dotenv").config()
 const { Resend } = require("resend")
 
-// Initialize Resend with verified API key
-const resend = new Resend(process.env.FROM_EMAIL)
+// Use the API KEY here
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 async function sendEmail(to, subject, html) {
   try {
+
+    console.log("Sending email to:", to)
+
     const response = await resend.emails.send({
-      from: "Security Notification <no-reply@loginalert.online>", // verified domain
+      from: `Security Notification <${process.env.FROM_EMAIL}>`,
       to: [to],
-      subject,
-      html,
+      subject: subject,
+      html: html
     })
 
-    console.log("Email sent successfully:", response)
+    console.log("Resend response:", response)
+
     return true
+
   } catch (err) {
+
     console.error("EMAIL ERROR:", err)
+
     return false
   }
 }
