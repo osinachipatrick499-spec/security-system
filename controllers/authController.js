@@ -1,5 +1,3 @@
-require("dotenv").config()
-
 const codeService = require("../services/codeService")
 
 exports.login = async (req,res)=>{
