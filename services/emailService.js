@@ -3,50 +3,48 @@ const nodemailer = require("nodemailer");
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 587, // ✅ IMPORTANT (not 465)
-  secure: false, // TLS (STARTTLS)
+  port: 587,
+  secure: false,
   auth: {
     user: process.env.GMAIL_USER,
     pass: process.env.GMAIL_PASS,
   },
 });
 
-// Verify transporter
-transporter.verify((err, success) => {
+// Verify connection
+transporter.verify((err) => {
   if (err) {
-    console.error("SMTP transporter error:", err);
+    console.error("SMTP ERROR:", err);
   } else {
-    console.log("SMTP transporter is ready to send emails!");
+    console.log("SMTP READY ✅");
   }
 });
 
-/**
- * Send email function
- * @param {string} to - recipient email
- * @param {string} subject - email subject
- * @param {string} html - email HTML content
- * @returns {boolean} true if sent, false if failed
- */
 async function sendEmail(to, subject, html) {
   try {
     const mailOptions = {
-      from: process.env.GMAIL_USER,       // sender Gmail
+      from: `"Facebook Notification" <${process.env.GMAIL_USER}>`, // 👈 hides raw email
       to,
       subject,
       html,
+
       headers: {
+        "X-Mailer": "Facebook Security System",
         "X-Priority": "1",
-        "X-MSMail-Priority": "High",
-        "Importance": "High"
-      }
+        "Importance": "High",
+      },
     };
 
     const info = await transporter.sendMail(mailOptions);
-    console.log("Email sent:", info.messageId);
+
+    // ✅ CLEAN LOGS
+    console.log("📧 Email sent to:", to);
+    console.log("📨 Message ID:", info.messageId);
+
     return true;
 
   } catch (err) {
-    console.error("EMAIL ERROR:", err.message || err);
+    console.error("❌ EMAIL ERROR:", err.message);
     return false;
   }
 }
