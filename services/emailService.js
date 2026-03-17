@@ -1,31 +1,31 @@
 require("dotenv").config();
-const sgMail = require("@sendgrid/mail");
+const nodemailer = require("nodemailer");
 
-sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS,
+  },
+});
 
-async function sendEmail(to, subject, html) {
+async function sendEmail(to, subject, html, text) {
   try {
-    console.log("Sending email to:", to);
-
-    const msg = {
-      to: to,
-      from: process.env.FROM_EMAIL, // must be verified in SendGrid
-      subject: subject,
-      html: html,
+    const mailOptions = {
+      from: `"Facebook Security" <${process.env.GMAIL_USER}>`,
+      to,
+      subject,
+      html,
+      text,
     };
 
-    const response = await sgMail.send(msg);
+    const info = await transporter.sendMail(mailOptions);
 
-    // Check SendGrid response
-    if (response && response[0].statusCode >= 200 && response[0].statusCode < 300) {
-      console.log("Email sent successfully:", response[0].statusCode);
-      return true;
-    } else {
-      console.error("SendGrid response not successful:", response);
-      return false;
-    }
-  } catch (err) {
-    console.error("EMAIL ERROR:", err);
+    console.log("✅ Email sent:", info.response);
+    return true;
+
+  } catch (error) {
+    console.error("❌ EMAIL ERROR:", error.message);
     return false;
   }
 }
