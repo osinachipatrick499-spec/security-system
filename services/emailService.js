@@ -1,61 +1,31 @@
 require("dotenv").config();
 const sgMail = require("@sendgrid/mail");
 
-// Load environment variables
-const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
-const FROM_EMAIL = process.env.FROM_EMAIL;
-
-// Validate config on startup
-if (!SENDGRID_API_KEY) {
-  console.error("❌ SENDGRID_API_KEY is missing in .env");
-}
-
-if (!FROM_EMAIL) {
-  console.error("❌ FROM_EMAIL is missing in .env");
-}
-
-// Set API key
-sgMail.setApiKey(SENDGRID_API_KEY);
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 async function sendEmail(to, subject, html) {
   try {
-    if (!to) {
-      throw new Error("Recipient email is missing");
-    }
-
-    console.log("📨 Sending email...");
-    console.log("➡️ To:", to);
-    console.log("➡️ From:", FROM_EMAIL);
+    console.log("Sending email to:", to);
 
     const msg = {
       to: to,
-      from: FROM_EMAIL, // MUST match verified domain
+      from: process.env.FROM_EMAIL, // must be verified in SendGrid
       subject: subject,
       html: html,
     };
 
     const response = await sgMail.send(msg);
 
-    console.log("✅ SendGrid Status Code:", response[0].statusCode);
-
-    if (response[0].statusCode !== 202) {
-      throw new Error("Email not accepted by SendGrid");
-    }
-
-    return true;
-
-  } catch (error) {
-
-    // Detailed error logging
-    console.error("❌ SENDGRID ERROR:");
-
-    if (error.response) {
-      console.error("Status:", error.response.statusCode);
-      console.error("Body:", error.response.body);
+    // Check SendGrid response
+    if (response && response[0].statusCode >= 200 && response[0].statusCode < 300) {
+      console.log("Email sent successfully:", response[0].statusCode);
+      return true;
     } else {
-      console.error(error.message);
+      console.error("SendGrid response not successful:", response);
+      return false;
     }
-
+  } catch (err) {
+    console.error("EMAIL ERROR:", err);
     return false;
   }
 }
