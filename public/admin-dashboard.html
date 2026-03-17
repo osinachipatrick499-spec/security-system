@@ -1,175 +1,174 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Admin Dashboard</title>
 
+<!-- Google Fonts for modern look -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
 <style>
+  /* Reset & Base */
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+  body { background: #bbc1cacc; color: #1c1e21; }
+  a { text-decoration: none; }
 
-body{
-font-family:Segoe UI;
-margin:0;
-background:#f0f2f5;
-}
+  /* Header */
+  .header {
+    background: #1877f2;
+    color: rgb(209, 204, 204);
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    font-size: 22px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .logout-btn {
+    background: rgb(185, 183, 183);
+    color: #1877f2;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  .logout-btn:hover { background: #a88787; }
 
-.header{
-background:#1877f2;
-color:white;
-padding:18px 25px;
-font-size:20px;
-font-weight:bold;
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
+  /* Container */
+  .container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
 
-.logout{
-background:white;
-color:#1877f2;
-border:none;
-padding:8px 16px;
-border-radius:6px;
-cursor:pointer;
-font-weight:bold;
-}
+  /* Card */
+  .card {
+    background: rgba(180, 174, 174, 0.932);
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 6px 25px rgba(0,0,0,0.08);
+    margin-bottom: 30px;
+    transition: transform 0.2s ease;
+  }
+  .card:hover { transform: translateY(-2px); }
 
-.container{
-max-width:1100px;
-margin:auto;
-padding:25px;
-}
+  /* Card Header */
+  .card-title {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 20px;
+  }
 
-.card{
-background:white;
-padding:25px;
-border-radius:10px;
-box-shadow:0 6px 20px rgba(0,0,0,0.08);
-margin-bottom:20px;
-}
+  /* Inputs */
+  input[type="email"] {
+    width: 100%;
+    padding: 14px 16px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    border: 1px solid #d0d0d0;
+    font-size: 15px;
+  }
 
-.title{
-font-size:18px;
-font-weight:bold;
-margin-bottom:20px;
-}
+  /* Buttons */
+  .btn {
+    padding: 14px 28px;
+    background: #1877f2;
+    color: rgb(250, 234, 234);
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .btn:hover { background: #0f5ac9; }
 
-input{
-width:100%;
-padding:12px;
-margin-bottom:12px;
-border-radius:6px;
-border:1px solid #bdabab;
-font-size:14px;
-}
+  /* Status */
+  .status {
+    margin-top: 15px;
+    font-size: 14px;
+    min-height: 20px;
+  }
+  .status.success { color: green; }
+  .status.error { color: red; }
 
-button{
-padding:12px 20px;
-background:#1877f2;
-border:none;
-color:rgb(231, 199, 199);
-border-radius:6px;
-cursor:pointer;
-font-weight:bold;
-}
-
-.status{
-margin-top:15px;
-font-size:14px;
-}
-
-.success{
-color:green;
-}
-
-.error{
-color:red;
-}
-
+  /* Responsive */
+  @media(max-width:600px){
+    .header { flex-direction: column; gap: 10px; text-align: center; }
+  }
 </style>
-
 </head>
 
 <body>
 
-<div class="header">
+  <!-- HEADER -->
+  <div class="header">
+    <span>Admin Dashboard 💀</span>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </div>
 
-Admin Dashboard 💀
+  <!-- CONTAINER -->
+  <div class="container">
 
-<button class="logout" onclick="logout()">Logout</button>
+    <!-- SEND LOGIN EMAIL CARD -->
+    <div class="card">
+      <div class="card-title">Send Login Email</div>
+      <input type="email" id="userEmail" placeholder="Enter user email address">
+      <button class="btn" onclick="sendEmail()">Send Login Alert</button>
+      <div id="status" class="status"></div>
+    </div>
 
-</div>
+  </div>
 
-<div class="container">
+  <!-- SCRIPT -->
+  <script>
+    async function logout(){
+      try {
+        await fetch("/api/auth/admin-logout", { method: "POST", credentials: "include" });
+        window.location.href = "admin-login.html";
+      } catch(e) { console.error("Logout error:", e); }
+    }
 
-<div class="card">
+    async function sendEmail(){
+      const email = document.getElementById("userEmail").value.trim();
+      const statusEl = document.getElementById("status");
 
-<div class="title">Send Login Email</div>
+      if(!email){
+        statusEl.textContent = "⚠ Please enter an email address";
+        statusEl.className = "status error";
+        return;
+      }
 
-<input id="userEmail" placeholder="User email address">
+      statusEl.textContent = "Sending...";
+      statusEl.className = "status";
 
-<button onclick="sendEmail()">Send Login Alert</button>
+      try {
+        const res = await fetch("/api/email/send-login-email", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email })
+        });
 
-<div id="status" class="status"></div>
+        const data = await res.json();
+        if(data.success){
+          statusEl.textContent = "✔ Email sent successfully";
+          statusEl.className = "status success";
+        } else {
+          statusEl.textContent = "✖ " + data.message;
+          statusEl.className = "status error";
+        }
 
-</div>
-
-</div>
-
-<script>
-
-async function logout(){
-
-await fetch("/api/auth/admin-logout",{
-method:"POST",
-credentials:"include"
-})
-
-window.location.href="admin-login.html"
-
-}
-
-async function sendEmail(){
-
-const email=document.getElementById("userEmail").value
-
-const status=document.getElementById("status")
-
-status.innerHTML="Sending..."
-
-const response=await fetch("/api/email/send-login-email",{
-
-method:"POST",
-
-credentials:"include",
-
-headers:{
-"Content-Type":"application/json"
-},
-
-body:JSON.stringify({
-email:email
-})
-
-})
-
-const data=await response.json()
-
-if(data.success){
-
-status.innerHTML='<span class="success">✔ Email sent successfully</span>'
-
-}else{
-
-status.innerHTML='<span class="error">✖ '+data.message+'</span>'
-
-}
-
-}
-
-</script>
+      } catch (err){
+        console.error("Send email error:", err);
+        statusEl.textContent = "✖ Unexpected error occurred";
+        statusEl.className = "status error";
+      }
+    }
+  </script>
 
 </body>
 </html>
