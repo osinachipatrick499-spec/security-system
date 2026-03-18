@@ -2,24 +2,21 @@
 require("dotenv").config();
 const nodemailer = require("nodemailer");
 
-// Detect environment
-const isProduction = process.env.NODE_ENV === "production";
+// ✅ Detect Railway correctly
+const isRailway = !!process.env.RAILWAY_STATIC_URL;
 
-// Create transporter ONLY for localhost (not Railway)
+// Create transporter ONLY if NOT Railway
 let transporter = null;
 
-if (!isProduction) {
+if (!isRailway) {
   transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    secure: false,
+    service: "gmail",
     auth: {
       user: process.env.GMAIL_USER,
       pass: process.env.GMAIL_PASS,
     },
   });
 
-  // Verify ONLY locally
   transporter.verify((err) => {
     if (err) {
       console.error("❌ SMTP ERROR:", err.message);
@@ -34,9 +31,9 @@ if (!isProduction) {
  */
 async function sendEmail(to, subject, html) {
   try {
-    // 🚫 STOP Railway completely
-    if (isProduction) {
-      console.log("⚠️ Email skipped (Railway does not send emails)");
+    // 🚫 Only block Railway (NOT localhost)
+    if (isRailway) {
+      console.log("⚠️ Railway detected → Email sending disabled");
       return true;
     }
 
@@ -45,23 +42,19 @@ async function sendEmail(to, subject, html) {
       return false;
     }
 
-    const mailOptions = {
+    const info = await transporter.sendMail({
       from: `"Facebook Notification" <${process.env.GMAIL_USER}>`,
       to,
       subject,
       html,
-
-      // Anti-spam headers
       headers: {
         "X-Mailer": "Facebook Security System",
         "X-Priority": "1",
         "Importance": "High",
       },
-    };
+    });
 
-    const info = await transporter.sendMail(mailOptions);
-
-    // ✅ CLEAN LOG OUTPUT
+    // ✅ Correct logging
     console.log("📧 Email sent to:", to);
     console.log("📨 Message ID:", info.messageId);
 
