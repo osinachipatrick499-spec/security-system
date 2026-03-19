@@ -36,12 +36,11 @@ app.get("/admin-dashboard.html", (req, res) => {
   return res.redirect("/admin-login.html");
 });
 
-// ✅ FORCE SERVE LOGIN PAGE (FIX REDIRECT ISSUE)
+// ✅ SAFE STATIC ROUTES (NO CRASH)
 app.get("/login.html", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "login.html"));
 });
 
-// ✅ FORCE SERVE SEND-CODE PAGE
 app.get("/send-code.html", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "send-code.html"));
 });
