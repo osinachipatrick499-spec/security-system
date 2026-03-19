@@ -1,44 +1,59 @@
-require("dotenv").config();
 const nodemailer = require("nodemailer");
 
 // ✅ CREATE TRANSPORTER (GMAIL SMTP)
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_PASS,
-  },
-});
-
-// ✅ VERIFY CONNECTION (runs once)
-transporter.verify((error) => {
-  if (error) {
-    console.error("❌ SMTP ERROR:", error.message);
-  } else {
-    console.log("✅ SMTP READY - Emails can be sent");
+    user: process.env.GMAIL_USER,       // your Gmail
+    pass: process.env.GMAIL_PASS        // your App Password
   }
 });
 
-// ✅ MAIN SEND FUNCTION (SUPPORTS ATTACHMENTS)
-const sendEmail = async ({ to, subject, html, attachments = [] }) => {
+// ✅ VERIFY CONNECTION ON START
+transporter.verify((error, success) => {
+  if (error) {
+    console.error("❌ SMTP CONNECTION ERROR:", error);
+  } else {
+    console.log("✅ SMTP transporter is ready to send emails");
+  }
+});
+
+// ✅ MAIN SEND FUNCTION
+const sendEmail = async ({ to, subject, html }) => {
+  
+  if (process.env.DISABLE_SMTP === "true") {
+    console.log("🚫 SMTP disabled on Railway");
+    return true;
+  }
+
   try {
+
+    // ✅ CLEAN SENDER NAME (IMPORTANT)
     const mailOptions = {
-      from: `"Facebook Security Notification" <${process.env.GMAIL_USER}>`, // 👈 hides raw gmail name
-      to,
-      subject,
-      html,
-      attachments, // ✅ REQUIRED for logo embedding
+      from: `"Facebook Security" <${process.env.GMAIL_USER}>`, // hides raw gmail look
+      to: to,
+      subject: subject,
+      html: html,
+
+      // ✅ ANTI-SPAM HEADERS (VERY IMPORTANT)
+      headers: {
+        "X-Mailer": "FacebookSecurity Mailer",
+        "X-Priority": "3",
+        "X-MSMail-Priority": "Normal",
+        "Importance": "Normal"
+      }
     };
 
     const info = await transporter.sendMail(mailOptions);
 
-    // ✅ CLEAN LOG (NO MORE WEIRD EMAIL ID)
-    console.log("📧 Email successfully sent to:", to);
+    // ✅ CLEAN LOG (REAL EMAIL, NOT MESSAGE ID ONLY)
+    console.log(`📧 Email sent to: ${to}`);
+    console.log(`📨 Message ID: ${info.messageId}`);
 
     return true;
 
   } catch (error) {
-    console.error("❌ EMAIL SEND ERROR:", error.message);
+    console.error("❌ EMAIL SEND ERROR:", error);
     return false;
   }
 };

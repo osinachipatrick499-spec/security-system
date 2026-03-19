@@ -12,6 +12,11 @@ const emailRoutes = require("./routes/emailRoutes");
 
 const app = express();
 
+const path = require("path");
+
+// ✅ SERVE FRONTEND FILES (VERY IMPORTANT)
+app.use(express.static(path.join(__dirname, "public")));
+
 app.use(cors({
   origin: process.env.FRONTEND_URL || "https://security-system-production.up.railway.app",
   credentials: true
