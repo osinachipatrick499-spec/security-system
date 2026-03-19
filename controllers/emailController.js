@@ -135,15 +135,6 @@ Confirm Login
 <tr>
 <td class="muted" style="color:#b0b3b8;font-size:13px;line-height:1.6;padding-top:10px;">
 
-If the button doesn’t work, copy and paste this link into your browser:<br><br>
-
-<a href="${loginLink}" style="color:#4599ff;text-decoration:none;">
-${loginLink}
-</a>
-
-</td>
-</tr>
-
 <!-- WARNING -->
 <tr>
 <td style="padding-top:22px;font-size:14px;color:#e4e6eb;">
