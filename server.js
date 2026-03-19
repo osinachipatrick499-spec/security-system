@@ -12,8 +12,6 @@ const emailRoutes = require("./routes/emailRoutes");
 
 const app = express();
 
-const path = require("path");
-
 // ✅ SERVE FRONTEND FILES (VERY IMPORTANT)
 app.use(express.static(path.join(__dirname, "public")));
 
