@@ -51,6 +51,9 @@ app.use("/api/email", emailRoutes);
 
 const PORT = process.env.PORT || 3000;
 
+app.get("/test", (req, res) => {
+  res.send("Server is working perfectly");
+});
 app.listen(PORT, () => {
   console.log("Server running on port " + PORT);
 });
