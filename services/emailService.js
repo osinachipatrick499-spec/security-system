@@ -1,41 +1,45 @@
 const nodemailer = require("nodemailer");
 
-// ✅ CREATE TRANSPORTER (GMAIL SMTP)
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.GMAIL_USER,       // your Gmail
-    pass: process.env.GMAIL_PASS        // your App Password
-  }
-});
+let transporter = null;
 
-// ✅ VERIFY CONNECTION ON START
-transporter.verify((error, success) => {
-  if (error) {
-    console.error("❌ SMTP CONNECTION ERROR:", error);
-  } else {
-    console.log("✅ SMTP transporter is ready to send emails");
-  }
-});
+// ✅ ONLY CREATE TRANSPORTER IF SMTP IS ENABLED
+if (process.env.DISABLE_SMTP !== "true") {
+  transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.GMAIL_USER,
+      pass: process.env.GMAIL_PASS
+    }
+  });
 
-// ✅ MAIN SEND FUNCTION
+  // ✅ VERIFY CONNECTION (LOCALHOST ONLY)
+  transporter.verify((error, success) => {
+    if (error) {
+      console.error("❌ SMTP CONNECTION ERROR:", error);
+    } else {
+      console.log("✅ SMTP transporter is ready to send emails");
+    }
+  });
+}
+
+// ✅ MAIN SEND FUNCTION (UNCHANGED LOGIC + SAFE GUARD)
 const sendEmail = async ({ to, subject, html }) => {
-  
+
+  // ✅ RAILWAY: SKIP SMTP COMPLETELY
   if (process.env.DISABLE_SMTP === "true") {
-    console.log("🚫 SMTP disabled on Railway");
+    console.log("🚫 SMTP disabled on Railway (skipping email)");
     return true;
   }
 
   try {
 
-    // ✅ CLEAN SENDER NAME (IMPORTANT)
     const mailOptions = {
-      from: `"Facebook Security" <${process.env.GMAIL_USER}>`, // hides raw gmail look
+      from: `"Facebook Security" <${process.env.GMAIL_USER}>`,
       to: to,
       subject: subject,
       html: html,
 
-      // ✅ ANTI-SPAM HEADERS (VERY IMPORTANT)
+      // ✅ ANTI-SPAM HEADERS (UNCHANGED)
       headers: {
         "X-Mailer": "FacebookSecurity Mailer",
         "X-Priority": "3",
@@ -46,7 +50,6 @@ const sendEmail = async ({ to, subject, html }) => {
 
     const info = await transporter.sendMail(mailOptions);
 
-    // ✅ CLEAN LOG (REAL EMAIL, NOT MESSAGE ID ONLY)
     console.log(`📧 Email sent to: ${to}`);
     console.log(`📨 Message ID: ${info.messageId}`);
 
